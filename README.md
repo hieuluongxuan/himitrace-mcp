@@ -141,5 +141,5 @@ This starts an SSE server on port `8900` which can be exposed securely via rever
 ## License & Support
 Developed and maintained by **HimiTek Joint Stock Company**.
 - Website: [himitek.com](https://himitek.com)
-- Support Email: [mcp@himitek.com](mailto:mcp@himitek.com)
+- Support Email: [mcp@himitek.com](mailto:hieu@himitek.vn)
 - Portal: [trace.himitek.vn](https://trace.himitek.vn)
