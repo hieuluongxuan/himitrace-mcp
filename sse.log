@@ -1,4 +1,0 @@
-Warning: Server is binding to 0.0.0.0 without DNS rebinding protection. Consider using the allowedHosts option to restrict allowed hosts, or use authentication to protect your server.
-HimiTrace MCP SSE Server running on http://0.0.0.0:8900
-[SSE] New connection request received
-[SSE] Session 7127be22-6d40-442e-b531-b241a1df8e45 connected successfully
