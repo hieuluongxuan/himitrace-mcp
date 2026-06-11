@@ -1,7 +1,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { CallToolRequestSchema, ListToolsRequestSchema, ListResourcesRequestSchema, ReadResourceRequestSchema, } from "@modelcontextprotocol/sdk/types.js";
 import { TraceChain } from "./blockchain.js";
 const chain = new TraceChain();
@@ -373,34 +373,15 @@ async function main() {
         : parseInt(process.env.PORT || "8900", 10);
     if (isSse) {
         const app = createMcpExpressApp({ host: "0.0.0.0" });
-        const transports = new Map();
-        app.get("/sse", async (req, res) => {
-            console.log("[SSE] New connection request received");
-            const transport = new SSEServerTransport("/messages", res);
-            const sessionId = transport.sessionId;
-            transports.set(sessionId, transport);
-            transport.onclose = () => {
-                console.log(`[SSE] Session ${sessionId} closed`);
-                transports.delete(sessionId);
-            };
-            await server.connect(transport);
-            console.log(`[SSE] Session ${sessionId} connected successfully`);
-        });
-        app.post("/messages", async (req, res) => {
-            const sessionId = req.query.sessionId;
-            if (!sessionId) {
-                res.status(400).send("Session ID required");
-                return;
-            }
-            const transport = transports.get(sessionId);
-            if (!transport) {
-                res.status(404).send("Session not found or expired");
-                return;
-            }
-            await transport.handlePostMessage(req, res);
+        const transport = new StreamableHTTPServerTransport();
+        await server.connect(transport);
+        console.error("[Streamable HTTP] Connected to MCP server");
+        app.all("/sse", async (req, res) => {
+            console.log(`[Streamable HTTP] Received ${req.method} request on /sse`);
+            await transport.handleRequest(req, res);
         });
         app.listen(port, "0.0.0.0", () => {
-            console.error(`HimiTrace MCP SSE Server running on http://0.0.0.0:${port}`);
+            console.error(`HimiTrace MCP Streamable HTTP Server running on http://0.0.0.0:${port}`);
         });
     }
     else {
