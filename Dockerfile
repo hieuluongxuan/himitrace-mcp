@@ -16,5 +16,6 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/contract_abi.json /app/contract_config.json ./
 
 ENV NODE_ENV=production
+EXPOSE 8900
 
 ENTRYPOINT ["node", "dist/index.js"]

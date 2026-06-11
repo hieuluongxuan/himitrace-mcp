@@ -1,5 +1,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -391,9 +393,56 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("HimiTrace MCP Server running on stdio");
+  const args = process.argv.slice(2);
+  const isSse = args.includes("--sse");
+  const portArgIndex = args.indexOf("--port");
+  const port = portArgIndex !== -1 && args[portArgIndex + 1]
+    ? parseInt(args[portArgIndex + 1], 10)
+    : parseInt(process.env.PORT || "8900", 10);
+
+  if (isSse) {
+    const app = createMcpExpressApp({ host: "0.0.0.0" });
+    const transports = new Map<string, SSEServerTransport>();
+
+    app.get("/sse", async (req, res) => {
+      console.log("[SSE] New connection request received");
+      const transport = new SSEServerTransport("/messages", res);
+      const sessionId = transport.sessionId;
+      transports.set(sessionId, transport);
+
+      transport.onclose = () => {
+        console.log(`[SSE] Session ${sessionId} closed`);
+        transports.delete(sessionId);
+      };
+
+      await server.connect(transport);
+      console.log(`[SSE] Session ${sessionId} connected successfully`);
+    });
+
+    app.post("/messages", async (req, res) => {
+      const sessionId = req.query.sessionId as string;
+      if (!sessionId) {
+        res.status(400).send("Session ID required");
+        return;
+      }
+
+      const transport = transports.get(sessionId);
+      if (!transport) {
+        res.status(404).send("Session not found or expired");
+        return;
+      }
+
+      await transport.handlePostMessage(req, res);
+    });
+
+    app.listen(port, "0.0.0.0", () => {
+      console.error(`HimiTrace MCP SSE Server running on http://0.0.0.0:${port}`);
+    });
+  } else {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error("HimiTrace MCP Server running on stdio");
+  }
 }
 
 main().catch((error) => {
