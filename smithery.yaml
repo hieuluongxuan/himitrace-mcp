@@ -1,0 +1,16 @@
+# Smithery configuration file
+# See https://smithery.ai/docs/config for more details
+version: 1
+mcp-server:
+  name: "himitrace-mcp"
+  description: "HimiTrace MCP Server — Blockchain Product Traceability for AI Agents"
+  version: "1.0.0"
+  publisher: "HimiTek"
+  author: "Hieu Luong <mcp@himitek.com>"
+  license: "MIT"
+  repository: "https://github.com/hieuluongxuan/OnePersonCompany"
+  entrypoint:
+    node: "dist/index.js"
+  build:
+    - npm install
+    - npm run build

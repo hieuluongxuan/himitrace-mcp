@@ -1,12 +1,12 @@
-# HimiTrace MCP Server — Blockchain Product Traceability for AI Agents
+# HimiTrace MCP Server — Blockchain Product Traceability for AI Agents (TypeScript Port)
 
 [![Polygon Mainnet](https://img.shields.io/badge/Network-Polygon_Mainnet-8247E5?style=flat-square&logo=polygon&logoColor=white)](https://polygonscan.com/address/0xFF7A3429427aFda56b2994B2F3eeF4464b851EE0)
-[![FastMCP](https://img.shields.io/badge/Framework-FastMCP-blue?style=flat-square)](https://github.com/jlowin/fastmcp)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Model Context Protocol](https://img.shields.io/badge/Protocol-MCP-blue?style=flat-square)](https://modelcontextprotocol.io)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 
 HimiTrace is a Model Context Protocol (MCP) server that connects AI agents directly to the Polygon Mainnet blockchain to check product authenticity, verify origins, and inspect supply chain event lineages. Developed by **HimiTek** (himitek.com), it bridges immutable on-chain trust data with natural language queries for AI agents.
 
-This allows any MCP-compatible AI agent (such as Claude Desktop, Cursor, Windsurf, or ChatGPT) to seamlessly query, track, and audit physical goods (such as Vietnamese agricultural exports, seafood, and components) on-chain in plain language.
+This allows any MCP-compatible AI agent (such as Claude Desktop, Cursor, Windsurf, or ChatGPT) to query, track, and audit physical goods on-chain in plain language.
 
 ---
 
@@ -24,26 +24,32 @@ This allows any MCP-compatible AI agent (such as Claude Desktop, Cursor, Windsur
 
 - **Contract Address:** `0xFF7A3429427aFda56b2994B2F3eeF4464b851EE0`
 - **Network:** Polygon Mainnet (Chain ID: `137`)
-- **Framework:** built on Anthropic's Model Context Protocol (MCP) using Python `FastMCP`.
+- **Framework:** built on Anthropic's Model Context Protocol (MCP) SDK using TypeScript and `ethers.js` (v6).
 
 ---
 
 ## Installation & Setup
 
 ### 1. Prerequisites
-- Python 3.10 or higher
-- Access to a Polygon RPC node (default public RPCs are configured, or you can specify your own).
+- Node.js v20 or higher
+- npm
 
 ### 2. Install Dependencies
-Clone the repository and install the required packages:
+Clone the repository and install the packages:
 ```bash
-pip install -r requirements.txt
+npm install
 ```
 
-### 3. Test Connection
+### 3. Build the Project
+Compile TypeScript to Javascript:
+```bash
+npm run build
+```
+
+### 4. Test Connection
 Ensure that the server can connect to the Polygon contract and query tools locally:
 ```bash
-python test_local.py
+npm run test:local
 ```
 If you see `ALL TESTS PASSED`, your environment is configured correctly.
 
@@ -61,16 +67,16 @@ Add the following to the `mcpServers` object:
 ```json
 {
   "mcpServers": {
-    "himitrace": {
-      "command": "python",
+    "himitrace-mcp": {
+      "command": "node",
       "args": [
-        "C:/path/to/your/himitrace/mcp_server/server.py"
+        "C:/path/to/your/himitrace-mcp/dist/index.js"
       ]
     }
   }
 }
 ```
-*Note: Make sure to replace `C:/path/to/your/himitrace/mcp_server/server.py` with the actual absolute path to your `server.py`.*
+*Note: Make sure to replace `C:/path/to/your/himitrace-mcp/dist/index.js` with the actual absolute path to your compiled entry point.*
 
 ### 2. Cursor or Windsurf IDE
 In Cursor settings:
@@ -79,7 +85,7 @@ In Cursor settings:
 3. Fill in the fields:
    - **Name:** `HimiTrace`
    - **Type:** `command`
-   - **Command:** `python "C:/path/to/your/himitrace/mcp_server/server.py"`
+   - **Command:** `node "C:/path/to/your/himitrace-mcp/dist/index.js"`
 
 ---
 
@@ -128,18 +134,8 @@ AI agents can reference the following static resources:
 
 ---
 
-## Production Deployment (HTTP / SSE mode)
-
-To run HimiTrace MCP in Server-Sent Events (SSE) mode over HTTP for remote AI integrations:
-```bash
-fastmcp run server.py --transport sse --port 8900
-```
-This starts an SSE server on port `8900` which can be exposed securely via reverse proxy (e.g., Nginx with TLS) or tools like Ngrok/Cloudflare Tunnels.
-
----
-
 ## License & Support
 Developed and maintained by **HimiTek Joint Stock Company**.
 - Website: [himitek.com](https://himitek.com)
-- Support Email: [mcp@himitek.com](mailto:hieu@himitek.vn)
+- Support Email: [mcp@himitek.com](mailto:mcp@himitek.com)
 - Portal: [trace.himitek.vn](https://trace.himitek.vn)

@@ -1,0 +1,9 @@
+{
+  "network": "polygon_mainnet",
+  "chain_id": 137,
+  "rpc_url": "https://polygon-bor-rpc.publicnode.com",
+  "contract_address": "0xFF7A3429427aFda56b2994B2F3eeF4464b851EE0",
+  "deployer": "0x798F966f678353c470facA26964924979e17b8E9",
+  "tx_hash": "ebbbee4d755339b78ca8679eb51873f5ccdaa7c7b7c234c23dd824323741bb95",
+  "explorer": "https://polygonscan.com/address/0xFF7A3429427aFda56b2994B2F3eeF4464b851EE0"
+}
