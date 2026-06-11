@@ -374,11 +374,14 @@ async function main() {
     if (isSse) {
         const app = createMcpExpressApp({ host: "0.0.0.0" });
         const transport = new StreamableHTTPServerTransport();
+        transport.onerror = (error) => {
+            console.error("[Streamable HTTP Error]", error);
+        };
         await server.connect(transport);
         console.error("[Streamable HTTP] Connected to MCP server");
         app.all("/sse", async (req, res) => {
             console.log(`[Streamable HTTP] Received ${req.method} request on /sse`);
-            await transport.handleRequest(req, res);
+            await transport.handleRequest(req, res, req.body);
         });
         app.listen(port, "0.0.0.0", () => {
             console.error(`HimiTrace MCP Streamable HTTP Server running on http://0.0.0.0:${port}`);
